@@ -114,34 +114,87 @@
   [f & maps]
   (f (apply merge maps)))
 
+(defn- setup-plugboard
+  "take a map of wiring pairs. Each map pair implies the reverse 
+  ie. {:A :Z} would also bind {:Z :A}. converting string keys into char keys  "
+  [key-bindings];int fkey falue
+  (let [ks (map #(.charAt % 0) (keys key-bindings))
+        vs (map #(.charAt % 0) (vals key-bindings ))]
+    (merge (into {}  
+                 (vec (map vec  (partition 2 (interleave ks vs))))) 
+           (into {}  
+                 (vec (map vec (partition 2  (interleave  vs ks))))))))
+
+(defn plug-transpose
+  "Take a plugboard and letter and return transposed letter. returns original letter if there is no match in plugboard"
+  [{:keys [plugboard letter]}]
+  {:letter (if-let [ch (get plugboard letter)]
+              ch
+              letter)})
+
 (defn pipeline
-  "End to end encoding of a letter through all rotors and reflector"
-  [{:keys [reflector left-rotor middle-rotor right-rotor letter]}]
-  (->> (encode {:rotor  right-rotor, :letter  letter }) ;rr-out
+  "End to end encoding of a letter through all rotors and reflector
+returns back the entire enigma machine"
+  [{:keys [reflector left-rotor middle-rotor right-rotor letter plugboard]}]
+  (->> (plug-transpose {:plugboard plugboard :letter letter})
+       (thread-encoder encode {:rotor  right-rotor }) ;rr-out
        (thread-encoder encode {:rotor middle-rotor })   ;mr-out
        (thread-encoder encode {:rotor left-rotor })     ;lr-out
        (thread-encoder reflect { :reflector reflector });reflect-val 
        (thread-encoder inverse-encode {:rotor left-rotor })
        (thread-encoder inverse-encode {:rotor middle-rotor })
-       (thread-encoder inverse-encode {:rotor right-rotor })))
+       (thread-encoder inverse-encode {:rotor right-rotor })
+       (thread-encoder plug-transpose {:plugboard plugboard})
+       (merge  {:reflector  reflector 
+                :left-rotor left-rotor 
+                :middle-rotor middle-rotor 
+                :right-rotor right-rotor 
+                :plugboard plugboard})))
 
 (defn push-key
   "Simulate a key press. Right rotor will always be stepped."
-  [{:keys [left-rotor middle-rotor right-rotor reflector letter settings]}]
-  (let [[i,ii,iii] settings 
-        lr (setup-rotor {:rotor  left-rotor, :start-pos i})
-        mr (setup-rotor {:rotor middle-rotor, :start-pos ii})
-        rr (setup-rotor {:rotor  right-rotor, :start-pos iii})
-        stepped-rotors (step-machine {:left-rotor lr
-                                      :middle-rotor mr
-                                      :right-rotor rr})]
+  [{:keys [left-rotor middle-rotor right-rotor reflector letter settings plugboard]}]
+  (let [ stepped-rotors (step-machine {:left-rotor left-rotor
+                                       :middle-rotor middle-rotor
+                                       :right-rotor right-rotor})]
     (pipeline (merge 
                stepped-rotors 
                {:reflector reflector
+                :plugboard plugboard
                 :letter letter} ))))
+;;TODO: label outgoing letter incoming letter
+(defn enigma-machine
+  "create an enigma machine"
+  [{:keys [left-rotor middle-rotor right-rotor reflector settings plugboard]}]
+  (let [[i,ii,iii] settings 
+        lr (setup-rotor {:rotor left-rotor, :start-pos i})
+        mr (setup-rotor {:rotor middle-rotor, :start-pos ii})
+        rr (setup-rotor {:rotor right-rotor, :start-pos iii})]
+    {:left-rotor lr
+     :middle-rotor mr
+     :right-rotor rr 
+     :reflector reflector
+     :plugboard (setup-plugboard  plugboard)} ))
 
-
-
+;TODO no blank or empty strings allowed create a spec for that
+(defn encode-string
+  "encode a string"
+  [e-machine msg]
+  (let  [[head & tail] (seq msg)
+         machines (map (fn [ch]                         
+                         #(push-key (merge 
+                                     % 
+                                     {:letter ch})))
+                       tail )]
+    (apply str 
+           (map :letter 
+                (reductions (fn [m1 m2]
+                              (-> m1 
+                                  m2)) 
+                            (push-key (merge 
+                                       e-machine
+                                       {:letter head})) 
+                            machines)))))
 
 
 
