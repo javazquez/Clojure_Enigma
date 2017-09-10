@@ -1,61 +1,65 @@
-(ns enigma-machine.core)
+(ns enigma-machine.core
+  (:require [clojure.spec.alpha :as s]))
 
+(s/def ::valid-alpha-string? (s/and 
+                       string? 
+                       #(not (empty? %))
+                       #(re-seq #"^[A-Za-z]*$" %)))
+
+;(s/valid? ::valid-alpha-string? "AAAA1")
 ;;https://en.wikipedia.org/wiki/Enigma_rotor_details
 ;http://users.telenet.be/d.rijmenants/en/enigmatech.htm#reflector
-
 (def alphabet (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 
 (def rotor1   {:wiring (seq "EKMFLGDQVZNTOWYHXUSPAIBRCJ")
                :offset 0
                :current-char \E
-               :notch \Q
-               })
+               :notch \Q })
 
 (def rotor2   {:wiring (seq "AJDKSIRUXBLHWTMCQGZNPYFVOE")
                :offset 0
                :current-char \A
-               :notch \E
-               })
+               :notch \E })
 
 (def rotor3   {:wiring (seq "BDFHJLCPRTXVZNYEIWGAKMUSQO")
                :offset 0
                :current-char \B ;use this to check for stepping
-               :notch \V})
+               :notch \V })
 
 (def reflector-a (seq "EJMZALYXVBWFCRQUONTSPIKHGD"))
 (def reflector-b (seq "YRUHQSLDPXNGOKMIEBFZCWVJAT"))
 (def reflector-c (seq "FVPJIAOYEDRZXWGCTKUQSBNMHL"))
 
 
-(defn reflect
+(defn- reflect
   "reflect incoming letter using given reflector"
   [{:keys [reflector letter]}]
   (->> (.indexOf alphabet letter )
        (nth reflector )
        (hash-map :letter)))
 
-(defn step-position?
+(defn- step-position?
   "If the notch postion is 0 in the off-mapping, it means that it is in the 'A' 
   position"
   [rotor]
   (= (:notch rotor) 
      (:current-char rotor)))
 
-(defn setup-rotor
+(defn- setup-rotor
   "step a rotor to start position(a char) used in initialization"
   [{:keys [rotor start-pos]}]
   (let [pos (+ (:offset rotor) (.indexOf alphabet start-pos))]
     (merge rotor {:offset pos
                   :current-char (nth alphabet pos)})))
 
-(defn step-rotor
+(defn- step-rotor
   "Step a single rotor "
   [ rotor]
   (let [offset-pos (-> :offset rotor inc (mod 26))  ]
     (merge rotor {:offset offset-pos
                   :current-char (nth (:wiring rotor) offset-pos )})))
 
-(defn step-machine
+(defn- step-machine
   "Step the right-rotor and all other rotors accordingly"
   [{:keys [left-rotor middle-rotor right-rotor] :as rotors}]
   (let [lr-notch? (step-position? left-rotor) 
@@ -79,7 +83,7 @@
   offeset due to stepping. translation-func will be provided by both inverse-encode 
   and encode functions"
   [{:keys [rotor letter  translation-func]}]
-  (let [in-letter-pos  (.indexOf alphabet letter) ;j
+  (let [in-letter-pos  (.indexOf alphabet letter)
         offset-pos (mod (+ in-letter-pos (:offset rotor)) 26)  
         out-letter (->> offset-pos ;translated incoming position to cur rotor
                         translation-func
@@ -89,7 +93,7 @@
                         (nth alphabet ))]
     {:letter  out-letter}))
 
-(defn inverse-encode
+(defn- inverse-encode
   "Inverse-encode letter with given rotor. Translation function will handle the 
   offset.. revese of how encode handles it"
   [{:keys [letter rotor] :as pass-thru}]
@@ -99,7 +103,7 @@
                                       (->>  (nth alphabet pos )
                                             (.indexOf (:wiring rotor))))}))
 
-(defn encode
+(defn- encode
   "Encode a letter using the given rotor."
   [{:keys [rotor letter]}]
   (encode-helper {:letter letter 
@@ -117,7 +121,7 @@
 (defn- setup-plugboard
   "take a map of wiring pairs. Each map pair implies the reverse 
   ie. {:A :Z} would also bind {:Z :A}. converting string keys into char keys  "
-  [key-bindings];int fkey falue
+  [key-bindings]
   (let [ks (map #(.charAt % 0) (keys key-bindings))
         vs (map #(.charAt % 0) (vals key-bindings ))]
     (merge (into {}  
@@ -125,14 +129,14 @@
            (into {}  
                  (vec (map vec (partition 2  (interleave  vs ks))))))))
 
-(defn plug-transpose
+(defn- plug-transpose
   "Take a plugboard and letter and return transposed letter. returns original letter if there is no match in plugboard"
   [{:keys [plugboard letter]}]
   {:letter (if-let [ch (get plugboard letter)]
               ch
               letter)})
 
-(defn pipeline
+(defn- pipeline
   "End to end encoding of a letter through all rotors and reflector
 returns back the entire enigma machine"
   [{:keys [reflector left-rotor middle-rotor right-rotor letter plugboard]}]
@@ -151,7 +155,7 @@ returns back the entire enigma machine"
                 :right-rotor right-rotor 
                 :plugboard plugboard})))
 
-(defn push-key
+(defn- push-key
   "Simulate a key press. Right rotor will always be stepped."
   [{:keys [left-rotor middle-rotor right-rotor reflector letter settings plugboard]}]
   (let [ stepped-rotors (step-machine {:left-rotor left-rotor
@@ -162,7 +166,7 @@ returns back the entire enigma machine"
                {:reflector reflector
                 :plugboard plugboard
                 :letter letter} ))))
-;;TODO: label outgoing letter incoming letter
+
 (defn enigma-machine
   "create an enigma machine"
   [{:keys [left-rotor middle-rotor right-rotor reflector settings plugboard]}]
@@ -176,10 +180,13 @@ returns back the entire enigma machine"
      :reflector reflector
      :plugboard (setup-plugboard  plugboard)} ))
 
-;TODO no blank or empty strings allowed create a spec for that
 (defn encode-string
   "encode a string"
   [e-machine msg]
+  (when-not (s/valid? ::valid-alpha-string? msg)
+    (throw (ex-info (str "invalid input " 
+                         (s/explain-str ::valid-alpha-string? msg))
+                    {})))
   (let  [[head & tail] (seq msg)
          machines (map (fn [ch]                         
                          #(push-key (merge 
@@ -195,7 +202,6 @@ returns back the entire enigma machine"
                                        e-machine
                                        {:letter head})) 
                             machines)))))
-
 
 
 

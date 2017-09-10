@@ -4,79 +4,79 @@
 
 (facts "test rotor 1 in A with no offset"
   (fact "A encoded as B"
-    (encode {:letter \A, :rotor rotor1}) => {:letter \E})
+    (#'enigma-machine.core/encode {:letter \A, :rotor rotor1}) => {:letter \E})
 
   (fact "B encoded as K"
-    (encode {:letter \B, :rotor rotor1}) => {:letter \K})
+    (#'enigma-machine.core/encode {:letter \B, :rotor rotor1}) => {:letter \K})
 
   (fact "K encoded as N"
-    (encode {:letter \K, :rotor  rotor1}) => {:letter \N})
+    (#'enigma-machine.core/encode {:letter \K, :rotor  rotor1}) => {:letter \N})
 
   (fact "stepping rotor1, A encoded as J"
-    (encode {:letter \A, :rotor (step-rotor rotor1)}) => {:letter \J}))
+    (#'enigma-machine.core/encode {:letter \A, :rotor (#'enigma-machine.core/step-rotor rotor1)}) => {:letter \J}))
 
 (facts "test individual rotors assumming 'AAA' with simulated pushkey "
   (fact "rotor 3: A -> K => J "
-    (encode {:letter \A, :rotor (step-rotor rotor3)}) => {:letter \C})
+    (#'enigma-machine.core/encode {:letter \A, :rotor (#'enigma-machine.core/step-rotor rotor3)}) => {:letter \C})
 
   (fact "rotor 2: B -> J"
-    (encode {:letter \C, :rotor rotor2}) => {:letter \D})
+    (#'enigma-machine.core/encode {:letter \C, :rotor rotor2}) => {:letter \D})
 
   (fact "rotor 1: J -> Z"
-    (encode {:letter \D, :rotor rotor1}) => {:letter \F} )
+    (#'enigma-machine.core/encode {:letter \D, :rotor rotor1}) => {:letter \F} )
 
   (fact "reflector: Z -> T"
-    (reflect {:letter \F, :reflector reflector-b}) => {:letter  \S})
+    (#'enigma-machine.core/reflect {:letter \F, :reflector reflector-b}) => {:letter  \S})
 
   (fact "rotor 1 reverse: T -> L "
-    (inverse-encode {:letter \S, :rotor rotor1}) => {:letter \S} )
+    (#'enigma-machine.core/inverse-encode {:letter \S, :rotor rotor1}) => {:letter \S} )
 
   (fact "rotor 2 reverse: L -> K "
-    (inverse-encode {:letter \S, :rotor rotor2}) => {:letter \E} )
+    (#'enigma-machine.core/inverse-encode {:letter \S, :rotor rotor2}) => {:letter \E} )
 
   (fact "rotor 3 reverse: K -> U "
-    (inverse-encode {:letter \E, :rotor (step-rotor rotor3)}) => {:letter \B}))
+    (#'enigma-machine.core/inverse-encode {:letter \E, :rotor (#'enigma-machine.core/step-rotor rotor3)}) => {:letter \B}))
 
 
 (fact "verify rotor setup"
   (fact "setup rotor 1 in B position "
-    (->> (:current-char (setup-rotor {:rotor rotor1 
+    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1 
                                       :start-pos \B})) 
          (.indexOf alphabet)) => 1 )
 
   (fact "setup rotor in C position "
-    (->> (:current-char (setup-rotor {:rotor rotor1
+    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1
                                       :start-pos \C}))
          (.indexOf alphabet)) => 2 )
 
   (fact "setup rotor 1 in Z position "
-    (->> (:current-char (setup-rotor {:rotor rotor1 
+    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1 
                                       :start-pos \Z}))
          (.indexOf alphabet)) => 25 ))
 
 
 (facts "test notch positions"
   (fact "rotor one in the Q postion is true"
-    (step-position? (setup-rotor 
+    (#'enigma-machine.core/step-position? (#'enigma-machine.core/setup-rotor 
                      {:rotor  rotor1, :start-pos \Q})) => true)
   (fact "rotor one in the Q postion is false"
-    (step-position? (setup-rotor 
+    (#'enigma-machine.core/step-position? (#'enigma-machine.core/setup-rotor 
                      {:rotor  rotor1, :start-pos \H})) => false)
 
   (fact "rotor one in the Q postion after stepping is true"
-    (step-position? (setup-rotor 
-                     {:rotor  (step-rotor rotor1)
+    (#'enigma-machine.core/step-position? (#'enigma-machine.core/setup-rotor 
+                     {:rotor  (#'enigma-machine.core/step-rotor rotor1)
                       :start-pos \P })) => true)
   
   
   (fact "rotor 3 is in the V position is true"
-    (step-position? (setup-rotor
+    (#'enigma-machine.core/step-position? (#'enigma-machine.core/setup-rotor
                      {:rotor rotor3, :start-pos \V})) => true))
 
 (facts "step machine"
   (fact "stepping AAA R-b III, II,I"
-    (step-machine 
-     (step-machine {:left-rotor rotor3
+    (#'enigma-machine.core/step-machine 
+     (#'enigma-machine.core/step-machine {:left-rotor rotor3
                     :middle-rotor rotor2
                     :right-rotor rotor1
                     })) => {:left-rotor rotor3
@@ -212,10 +212,17 @@
                                   :middle-rotor rotor2
                                   :right-rotor rotor3                 
                                   :settings "AAA"
-                                  :plugboard {"A" "SSS"}
+                                  :plugboard {"A" "S"}
                                   }) "AAAAA")  => "JXPNB")
 
-
+(fact "Reveal encrypted text =>  THISISATEST"
+  (encode-string (enigma-machine {:reflector reflector-b
+                                  :left-rotor rotor1
+                                  :middle-rotor rotor2
+                                  :right-rotor rotor3                 
+                                  :settings "AAA"
+                                  :plugboard {}
+                                  }) "OPGNDXCRWOM" )  => "THISISATEST")
 
 
 
