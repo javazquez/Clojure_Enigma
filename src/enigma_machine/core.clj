@@ -1,6 +1,8 @@
 (ns enigma-machine.core
   (:require [clojure.spec.alpha :as s]))
 
+;valid enigma has at least 3 rotors and a reflector
+
 (s/def ::valid-alpha-string? (s/and 
                        string? 
                        #(not (empty? %))
@@ -42,13 +44,13 @@
   "If the notch postion is 0 in the off-mapping, it means that it is in the 'A' 
   position"
   [rotor]
-  (= (:notch rotor) 
-     (:current-char rotor)))
+  (= (.indexOf alphabet (:notch rotor)) 
+     (:offset rotor)))
 
 (defn- setup-rotor
   "step a rotor to start position(a char) used in initialization"
   [{:keys [rotor start-pos]}]
-  (let [pos (+ (:offset rotor) (.indexOf alphabet start-pos))]
+  (let [pos (.indexOf alphabet start-pos)]
     (merge rotor {:offset pos
                   :current-char (nth alphabet pos)})))
 

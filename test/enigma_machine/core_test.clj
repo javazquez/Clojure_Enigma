@@ -64,9 +64,10 @@
                      {:rotor  rotor1, :start-pos \H})) => false)
 
   (fact "rotor one in the Q postion after stepping is true"
-    (#'enigma-machine.core/step-position? (#'enigma-machine.core/setup-rotor 
-                     {:rotor  (#'enigma-machine.core/step-rotor rotor1)
-                      :start-pos \P })) => true)
+    (#'enigma-machine.core/step-position?
+     (#'enigma-machine.core/step-rotor  (#'enigma-machine.core/setup-rotor 
+                                         {:rotor  rotor1
+                                          :start-pos \P }))) => true)
   
   
   (fact "rotor 3 is in the V position is true"
@@ -198,6 +199,14 @@
                                   :settings "AAA"
                                   }) "AAAAA")  => "BDZGO")
 
+
+(fact "Encode a String 'AAAAA' =>  BDZGO"
+  (encode-string (enigma-machine {:reflector reflector-b
+                                  :left-rotor rotor1
+                                  :middle-rotor rotor2
+                                  :right-rotor rotor3                 
+                                  :settings "AAA"
+                                  }) "AAAAAAAAAAAAAAAAAAAAAAAA")  => "BDZGOWCXLTKSBTMCDLPBMUQO")
 (fact "Encode a String 'AAAAA' =>  FTZMG"
   (encode-string (enigma-machine {:reflector reflector-b
                                   :left-rotor rotor3
