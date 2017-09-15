@@ -200,7 +200,7 @@
                                   }) "AAAAA")  => "BDZGO")
 
 
-(fact "Encode a String 'AAAAA' =>  BDZGO"
+(fact "Encode a String long string "
   (encode-string (enigma-machine {:reflector reflector-b
                                   :left-rotor rotor1
                                   :middle-rotor rotor2
