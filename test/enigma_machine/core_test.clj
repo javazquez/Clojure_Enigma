@@ -93,145 +93,145 @@
 
 (facts "test AAA config for R-B, III, II I,  BDZGO"
   (fact "reflector-b, III, II, I in AAA settings produces A->B"
-    (encode-string (enigma-machine {:reflector reflector-b
-                         :left-rotor rotor1
-                         :middle-rotor rotor2
-                         :right-rotor rotor3
-                         :settings "AAA"
-                         }) "A") => "B")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                      :left-rotor rotor1
+                                      :middle-rotor rotor2
+                                      :right-rotor rotor3
+                                      :settings "AAA"
+                                      }) "A")) => "B")
 
   (fact "reflector-b, III, II, I in AAB settings produces A->D"
-    (encode-string (enigma-machine {:reflector reflector-b
-                        :left-rotor rotor1
-                        :middle-rotor rotor2
-                        :right-rotor rotor3
-                        :settings "AAB"
-                        }) "A") =>  "D")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                             :left-rotor rotor1
+                                             :middle-rotor rotor2
+                                             :right-rotor rotor3
+                                             :settings "AAB"
+                                             }) "A")) =>  "D")
 
   (fact "reflector-b, III, II, I in AAC settings produces A->Z"
-    (encode-string (enigma-machine {:reflector reflector-b
-                  :left-rotor rotor1
-                  :middle-rotor rotor2
-                  :right-rotor rotor3
-                  :settings "AAC"
-                  }) "A") => "Z")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "AAC"
+                                                }) "A")) => "Z")
 
   (fact "reflector-b, III, II, I in AAC settings produces A->Z"
-    (encode-string (enigma-machine {:reflector reflector-b
-                        :left-rotor rotor1
-                        :middle-rotor rotor2
-                        :right-rotor rotor3
-                        :settings "AAD"
-                        }) "A") => "G")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "AAD"
+                                                }) "A")) => "G")
 
 (fact "reflector-b, III, II, I in AAC settings produces A->Z"
-  (encode-string (enigma-machine {:reflector reflector-b
-                      :left-rotor rotor1
-                      :middle-rotor rotor2
-                      :right-rotor rotor3
-                      :settings "AAE"
-                      }) "A") => "O")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3
+                                            :settings "AAE"
+                                            }) "A")) => "O")
 
 (fact "reflector-b, III, II, I in AAC settings produces A->Z"
-  (encode-string (enigma-machine {:reflector reflector-b
-                      :left-rotor rotor1
-                      :middle-rotor rotor2
-                      :right-rotor rotor3
-                      :settings "AAF"
-                      }) "A") =>  "W")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3
+                                            :settings "AAF"
+                                            }) "A")) =>  "W")
 
 (fact "reflector-b, III, II, I in AAC settings produces A->Z"
-  (encode-string (enigma-machine {:reflector reflector-b
-                      :left-rotor rotor1
-                      :middle-rotor rotor2
-                      :right-rotor rotor3
-                      :settings "AAG"
-                      }) "A") =>  "C"))  
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3
+                                            :settings "AAG"
+                                            }) "A")) =>  "C"))  
 ;In a three-rotor machine, double-stepping affected rotor two only. If in moving forward the ratchet of rotor three was engaged, rotor two would move again on the subsequent keystroke, resulting in two consecutive steps. Rotor two also pushes rotor one forward after 26 steps, but since rotor one moves forward with every keystroke anyway, there is no double-stepping.[10] This double-stepping caused the rotors to deviate from odometer-style regular motion.
 
 
 (facts "Normal sequence:"
   (fact "AAV — right rotor (III) goes in V—notch position "
-    (encode-string (enigma-machine {:reflector reflector-b
-                        :left-rotor rotor1
-                        :middle-rotor rotor2
-                        :right-rotor rotor3
-                        :settings "AAV"
-                        }) "A") =>  "U")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "AAV"
+                                                }) "A")) =>  "U")
 
   (fact "ADV — right rotor (III) goes in V—notch position"
-    (encode-string (enigma-machine {:reflector reflector-b
-                        :left-rotor rotor1
-                        :middle-rotor rotor2
-                        :right-rotor rotor3
-                        :settings "ADV"
-                        }) "A") =>  "Q")
+    (:result(encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "ADV"
+                                                }) "A")) =>  "Q")
 
   (fact "AEW — right rotor steps, takes middle rotor (II) one step further, which is now in its own E—notch position"
-    (encode-string (enigma-machine {:reflector reflector-b
-                 :left-rotor rotor1
-                 :middle-rotor rotor2
-                 :right-rotor rotor3
-                 :settings "AEW"
-                 }) "A") =>  "I")
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "AEW"
+                                                }) "A")) =>  "I")
 
   (fact "BFX — normal step of right rotor, double step of middle rotor, normal step of left rotor" 
-    (encode-string  (enigma-machine {:reflector reflector-b
-                         :left-rotor rotor1
-                         :middle-rotor rotor2
-                         :right-rotor rotor3                        
-                         :settings "BFX"
-                         }) "A") => "B")
+    (:result (encode-string  (enigma-machine {:reflector reflector-b
+                                                 :left-rotor rotor1
+                                                 :middle-rotor rotor2
+                                                 :right-rotor rotor3                        
+                                                 :settings "BFX"
+                                                 }) "A")) => "B")
 
   (fact "BFY — normal step of right rotor"
-    (encode-string (enigma-machine {:reflector reflector-b
-                                    :left-rotor rotor1
-                                    :middle-rotor rotor2
-                                    :right-rotor rotor3
-                                    :settings "BFY"
-                                    }) "A") =>  "M"))
+    (:result (encode-string (enigma-machine {:reflector reflector-b
+                                                :left-rotor rotor1
+                                                :middle-rotor rotor2
+                                                :right-rotor rotor3
+                                                :settings "BFY"
+                                                }) "A")) =>  "M"))
 
 (fact "Encode a String 'AAAAA' =>  BDZGO"
-  (encode-string (enigma-machine {:reflector reflector-b
-                                  :left-rotor rotor1
-                                  :middle-rotor rotor2
-                                  :right-rotor rotor3                 
-                                  :settings "AAA"
-                                  }) "AAAAA")  => "BDZGO")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3                 
+                                            :settings "AAA"
+                                            }) "AAAAA"))  => "BDZGO")
 
 
 (fact "Encode a String long string "
-  (encode-string (enigma-machine {:reflector reflector-b
-                                  :left-rotor rotor1
-                                  :middle-rotor rotor2
-                                  :right-rotor rotor3                 
-                                  :settings "AAA"
-                                  }) "AAAAAAAAAAAAAAAAAAAAAAAA")  => "BDZGOWCXLTKSBTMCDLPBMUQO")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3                 
+                                            :settings "AAA"
+                                            }) "AAAAAAAAAAAAAAAAAAAAAAAA"))  => "BDZGOWCXLTKSBTMCDLPBMUQO")
 (fact "Encode a String 'AAAAA' =>  FTZMG"
-  (encode-string (enigma-machine {:reflector reflector-b
-                                  :left-rotor rotor3
-                                  :middle-rotor rotor2
-                                  :right-rotor rotor1                 
-                                  :settings "AAA"
-                                  }) "AAAAA")  => "FTZMG")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor3
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor1                 
+                                            :settings "AAA"
+                                            }) "AAAAA"))  => "FTZMG")
 
  (fact "PlugBoard Encode a String 'AAAAA' =>  JXPNB"
-  (encode-string (enigma-machine {:reflector reflector-b
-                                  :left-rotor rotor1
-                                  :middle-rotor rotor2
-                                  :right-rotor rotor3                 
-                                  :settings "AAA"
-                                  :plugboard {"A" "S"}
-                                  }) "AAAAA")  => "JXPNB")
+   (:result (encode-string (enigma-machine {:reflector reflector-b
+                                             :left-rotor rotor1
+                                             :middle-rotor rotor2
+                                             :right-rotor rotor3                 
+                                             :settings "AAA"
+                                             :plugboard {"A" "S"}
+                                             }) "AAAAA"))  => "JXPNB")
 
 (fact "Reveal encrypted text =>  THISISATEST"
-  (encode-string (enigma-machine {:reflector reflector-b
-                                  :left-rotor rotor1
-                                  :middle-rotor rotor2
-                                  :right-rotor rotor3                 
-                                  :settings "AAA"
-                                  :plugboard {}
-                                  }) "OPGNDXCRWOM" )  => "THISISATEST")
+  (:result (encode-string (enigma-machine {:reflector reflector-b
+                                            :left-rotor rotor1
+                                            :middle-rotor rotor2
+                                            :right-rotor rotor3                 
+                                            :settings "AAA"
+                                            :plugboard {}
+                                            }) "OPGNDXCRWOM" ))  => "THISISATEST")
 
 
 
