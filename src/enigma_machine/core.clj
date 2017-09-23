@@ -243,8 +243,7 @@ returns back the entire enigma machine"
     {:result  (apply str 
                      (map :letter 
                           reducts))
-     :enigma-machine (first (reverse reducts))}
-    ))
+     :enigma-machine (first (reverse reducts))}))
 
 
 
