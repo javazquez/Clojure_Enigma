@@ -224,6 +224,15 @@
                                              :plugboard {"A" "S"}
                                              }) "AAAAA"))  => "JXPNB")
 
+(fact "PlugBoard Encode a String 'SAAAA' =>  BXPNB"
+   (:result (encode-string (enigma-machine {:reflector reflector-b
+                                             :left-rotor rotor1
+                                             :middle-rotor rotor2
+                                             :right-rotor rotor3                 
+                                             :settings "AAA"
+                                             :plugboard {"A" "S"}
+                                             }) "SAAAA"))  => "BXPNB")
+
 (fact "Reveal encrypted text =>  THISISATEST"
   (:result (encode-string (enigma-machine {:reflector reflector-b
                                             :left-rotor rotor1
