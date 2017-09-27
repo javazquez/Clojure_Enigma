@@ -19,7 +19,7 @@ I had to add `[lein-midje "3.1.3"]` to my ~/.lein/profiles.clj
 watcher on the code files. If they change, only the relevant tests will be
 run again.
 
-## List of resources used consulted
+## List of resources consulted
 
 - http://enigma.louisedade.co.uk/enigma.html
 - Enigma Machine Mechanism (feat. a 'Double Step')  https://www.youtube.com/watch?v=hcVhQeZ5gI4
