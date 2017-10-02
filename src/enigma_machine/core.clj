@@ -13,12 +13,11 @@
 (s/def ::wiring  (s/and #(every? char? %)
                        ::twenty26-chars?))
 (s/def ::offset int?)
-(s/def ::current-char char?)
 (s/def ::notch char?)
 (s/def ::reflector ::twenty26-chars?)
 (s/def ::settings (s/and string?
                          #(= (count % ) 3)))
-(s/def ::rotor (s/keys :req-un [::wiring ::offset ::current-char ::notch]) )
+(s/def ::rotor (s/keys :req-un [::wiring ::offset ::notch]) )
 (s/def ::plugboard (s/keys))
 (s/def ::left-rotor ::rotor)
 (s/def ::middle-rotor ::rotor)
@@ -34,17 +33,14 @@
 
 (def rotor1   {:wiring (seq "EKMFLGDQVZNTOWYHXUSPAIBRCJ")
                :offset 0
-               :current-char \E
                :notch \Q })
 
 (def rotor2   {:wiring (seq "AJDKSIRUXBLHWTMCQGZNPYFVOE")
                :offset 0
-               :current-char \A
                :notch \E })
 
 (def rotor3   {:wiring (seq "BDFHJLCPRTXVZNYEIWGAKMUSQO")
                :offset 0
-               :current-char \B ;use this to check for stepping
                :notch \V })
 
 (def reflector-a (seq "EJMZALYXVBWFCRQUONTSPIKHGD"))
@@ -69,15 +65,13 @@
   "step a rotor to start position(a char) used in initialization"
   [{:keys [rotor start-pos]}]
   (let [pos (.indexOf alphabet start-pos)]
-    (merge rotor {:offset pos
-                  :current-char (nth alphabet pos)})))
+    (merge rotor {:offset pos })))
 
 (defn- step-rotor
   "Step a single rotor "
   [rotor]
   (let [offset-pos (-> :offset rotor inc (mod 26))  ]
-    (merge rotor {:offset offset-pos
-                  :current-char (nth (:wiring rotor) offset-pos )})))
+    (merge rotor {:offset offset-pos })))
 
 (defn- step-machine
   "Step the right-rotor and all other rotors accordingly"
@@ -239,6 +233,7 @@ returns back the entire enigma machine"
                      (map :letter 
                           reducts))
      :enigma-machine (first (reverse reducts))}))
+
 
 
 

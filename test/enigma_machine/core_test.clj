@@ -40,19 +40,16 @@
 
 (fact "verify rotor setup"
   (fact "setup rotor 1 in B position "
-    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1 
-                                      :start-pos \B})) 
-         (.indexOf alphabet)) => 1 )
+    (:offset (#'enigma-machine.core/setup-rotor {:rotor rotor1 
+                                                 :start-pos \B})) => 1 )
 
   (fact "setup rotor in C position "
-    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1
-                                      :start-pos \C}))
-         (.indexOf alphabet)) => 2 )
+    (:offset (#'enigma-machine.core/setup-rotor {:rotor rotor1
+                                                 :start-pos \C})) => 2 )
 
   (fact "setup rotor 1 in Z position "
-    (->> (:current-char (#'enigma-machine.core/setup-rotor {:rotor rotor1 
-                                      :start-pos \Z}))
-         (.indexOf alphabet)) => 25 ))
+    (:offset (#'enigma-machine.core/setup-rotor {:rotor rotor1 
+                                                 :start-pos \Z})) => 25 ))
 
 
 (facts "test notch positions"
@@ -84,7 +81,6 @@
                             :middle-rotor rotor2
                             :right-rotor  {:wiring (seq "EKMFLGDQVZNTOWYHXUSPAIBRCJ")
                                            :offset 2
-                                           :current-char \M
                                            :notch \Q
                                            }}))
 
